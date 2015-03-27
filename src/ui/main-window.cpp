@@ -63,6 +63,16 @@ void showTestDialog(QWidget *parent)
 
 } // namespace
 
+/// a little helper function to detect if the pos is outside the screens
+static bool isOutsideScreens(const QPoint &pos) {
+    QList<QScreen*> screens = QGuiApplication::screens();
+    for (int i = 0; i < screens.size() ; ++i) {
+        if (screens[i]->geometry().contains(pos))
+            return false;
+    }
+    return true;
+}
+
 
 MainWindow::MainWindow()
 {
@@ -237,6 +247,10 @@ void MainWindow::readSettings()
     } else {
         pos = settings.value("pos", getDefaultPosition()).toPoint();
         size = settings.value("size", QSize()).toSize();
+
+        // we don't want to be out of screen
+        if (isOutsideScreens(pos))
+            pos = getDefaultPosition();
     }
 
     first_show = false;
